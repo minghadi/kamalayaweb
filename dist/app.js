@@ -1,0 +1,13 @@
+const menu=document.querySelector('.menu-toggle');
+const nav=document.querySelector('#nav');
+menu.addEventListener('click',()=>{const open=menu.getAttribute('aria-expanded')!=='true';menu.setAttribute('aria-expanded',String(open));nav.classList.toggle('open',open)});
+nav.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{nav.classList.remove('open');menu.setAttribute('aria-expanded','false')}));
+const lightbox=document.querySelector('#lightbox');
+document.querySelectorAll('.image-open').forEach(button=>button.addEventListener('click',()=>{lightbox.querySelector('img').src=button.dataset.image;lightbox.querySelector('img').alt=button.dataset.caption;lightbox.querySelector('p').textContent=button.dataset.caption;lightbox.showModal()}));
+lightbox.querySelector('.close').addEventListener('click',()=>lightbox.close());
+lightbox.addEventListener('click',event=>{if(event.target===lightbox){const r=lightbox.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)lightbox.close()}});
+const today=new Date();const localDate=[today.getFullYear(),String(today.getMonth()+1).padStart(2,'0'),String(today.getDate()).padStart(2,'0')].join('-');
+document.querySelector('[name=date]').min=localDate;
+document.querySelector('#year').textContent=today.getFullYear();
+document.querySelector('#visit-form').addEventListener('submit',event=>{event.preventDefault();const data=new FormData(event.target);const date=new Date(data.get('date')+'T12:00:00');document.querySelector('#visit-summary').textContent=`Halo Kamalaya, saya ingin menanyakan ketersediaan kunjungan.\nPengalaman: ${data.get('experience')}\nTanggal: ${date.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})}\nJumlah tamu: ${data.get('guests')}\nMohon informasi layanan, harga, dan jadwal yang tersedia. Terima kasih.`;document.querySelector('#whatsapp').href='https://wa.me/6281328341934?text='+encodeURIComponent(document.querySelector('#visit-summary').textContent);document.querySelector('#visit-result').hidden=false;document.querySelector('#copy-status').textContent='Pesan siap. Lanjutkan ke WhatsApp untuk mengirim dan mengonfirmasi ketersediaan.';document.querySelector('#visit-result').scrollIntoView({block:'nearest',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'})});
+document.querySelector('#copy').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(document.querySelector('#visit-summary').textContent);document.querySelector('#copy-status').textContent='Catatan berhasil disalin.'}catch{document.querySelector('#copy-status').textContent='Silakan pilih dan salin teks catatan di atas.'}});
